@@ -61,7 +61,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseMiddleware<GlobalExceptionMiddleware>();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseMiddleware<GlobalExceptionMiddleware>();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
