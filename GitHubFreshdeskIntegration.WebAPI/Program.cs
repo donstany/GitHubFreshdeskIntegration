@@ -6,7 +6,7 @@ using System.Reflection;
 using FluentValidation;
 using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.Authentication.Commands;
-using GitHubFreshdeskIntegration.WebAPI.Extentions;
+using GitHubFreshdeskIntegration.WebAPI.Extensions;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 
 var builder = WebApplication.CreateBuilder(args);

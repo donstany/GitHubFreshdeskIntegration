@@ -5,7 +5,7 @@ using System.Text;
 using Refit;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
 
-namespace GitHubFreshdeskIntegration.WebAPI.Extentions
+namespace GitHubFreshdeskIntegration.WebAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
