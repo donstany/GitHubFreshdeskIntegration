@@ -49,8 +49,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GitHubFreshdeskIntegration API V1");
-    c.RoutePrefix = string.Empty; // Set Swagger UI at app root
-});
+    c.RoutePrefix = "swagger";
 
 app.UseHttpsRedirection();
 
