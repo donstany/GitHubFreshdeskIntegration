@@ -46,7 +46,7 @@ public class SyncGitHubUserToFreshdeskHandlerTests
 
         _freshdeskServiceMock
             .Setup(service => service.GetContactByEmailAsync(gitHubUser.Email, cancellationToken))
-            .ReturnsAsync((FreshdeskContact)null); // No existing contact
+            .ReturnsAsync((FreshdeskContact?)null); // No existing contact
 
         // Act
         var result = await _handler.Handle(command, cancellationToken);

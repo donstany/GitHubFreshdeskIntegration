@@ -1,9 +1,12 @@
+using FluentValidation.AspNetCore;
+using FluentValidation;
 using GitHubFreshdeskIntegration.Application.Features.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
 using GitHubFreshdeskIntegration.WebAPI.Middleware;
 using Refit;
 using System.Reflection;
+using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Validators;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Register MediatR services
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<SyncGitHubUserToFreshdeskHandler>());
+
+// Register FluentValidation services
+builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
+builder.Services.AddFluentValidationAutoValidation(); // Automatically validate model state
 
 // Load tokens from environment variables
 var githubToken = "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"; // working credentials
@@ -30,7 +37,6 @@ if (string.IsNullOrEmpty(freshdeskToken))
 }
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 // Configure GitHub Refit client with Bearer token
@@ -55,7 +61,7 @@ builder.Services.AddRefitClient<IFreshdeskApi>()
 builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IFreshdeskService, FreshdeskService>();
 
-builder.Services.AddLogging(); // Add logging services
+builder.Services.AddLogging(); 
 
 builder.Services.AddSwaggerGen();
 
