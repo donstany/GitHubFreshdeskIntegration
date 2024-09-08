@@ -1,25 +1,46 @@
-using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using FluentValidation.AspNetCore;
-using GitHubFreshdeskIntegration.Application.Features.Interfaces;
-using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
+using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Validators;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
 using GitHubFreshdeskIntegration.WebAPI.Middleware;
 using Refit;
 using System.Reflection;
-using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Validators;
-
+using FluentValidation;
+using GitHubFreshdeskIntegration.Application.Features.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure JWT Authentication
+var jwtKey = "your_secret_key_here"; // Replace with your actual secret key
+var key = Encoding.ASCII.GetBytes(jwtKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Set to true in production
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // Register MediatR services
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<SyncGitHubUserToFreshdeskHandler>());
 
 // Register FluentValidation services
 builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddFluentValidationAutoValidation(); // Automatically validate model state
+builder.Services.AddFluentValidationClientsideAdapters(); // Add client-side validation adapters if needed
 
 // Load tokens from environment variables
 var githubToken = "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"; // working credentials
@@ -29,12 +50,12 @@ var freshdeskToken = "xxx"; // mock credentials
 
 if (string.IsNullOrEmpty(githubToken))
 {
-    throw new InvalidOperationException("GitHub token is not set in the GITHUB_TOKEN environment variable.");
+    throw new InvalidOperationException("GitHub token is not set.");
 }
 
 if (string.IsNullOrEmpty(freshdeskToken))
 {
-    throw new InvalidOperationException("Freshdesk token is not set in the FRESHDESK_TOKEN environment variable.");
+    throw new InvalidOperationException("Freshdesk token is not set.");
 }
 
 // Add services to the container.
@@ -62,8 +83,7 @@ builder.Services.AddRefitClient<IFreshdeskApi>()
 builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IFreshdeskService, FreshdeskService>();
 
-builder.Services.AddLogging(); 
-
+builder.Services.AddLogging();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -81,6 +101,10 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+// Add authentication middleware
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

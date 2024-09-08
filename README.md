@@ -15,8 +15,8 @@ GitHubFreshdeskIntegration is a .NET 8 WebAPI application designed to integrate 
 
 ## Environment Variables
 
-- `GITHUB__TOKEN`: Your GitHub personal access token.
-- `FRESHDESK__TOKEN`: Your Freshdesk API key.
+- `GITHUB_TOKEN`: Your GitHub personal access token.
+- `FRESHDESK_TOKEN`: Your Freshdesk API key.
 
 ## Implementation Details
 
