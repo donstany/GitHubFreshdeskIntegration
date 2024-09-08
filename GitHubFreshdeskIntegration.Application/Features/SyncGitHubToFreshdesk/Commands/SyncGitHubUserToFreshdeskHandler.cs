@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using GitHubFreshdeskIntegration.Domain.Entities;
 using GitHubFreshdeskIntegration.Application.Interfaces;
+using GitHubFreshdeskIntegration.Application.Extensions;
 
 
 namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands
@@ -21,14 +22,8 @@ namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.
             // Get GitHub User
             var gitHubUser = await _gitHubService.GetUserAsync(request.Username, cancellationToken);
 
-            // Map fields to Freshdesk contact
-            var freshdeskContact = new FreshdeskContact
-            {
-                Name = gitHubUser.Name,
-                Email = gitHubUser.Email,
-                Phone = gitHubUser.Phone,
-                TwitterId = gitHubUser.TwitterUsername
-            };
+            // Use the extension method to map fields to Freshdesk contact
+            var freshdeskContact = gitHubUser.ToFreshdeskContact();
 
             // Check if contact already exists in Freshdesk
             var existingContact = await _freshdeskService.GetContactByEmailAsync(gitHubUser.Email, cancellationToken);
