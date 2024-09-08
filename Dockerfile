@@ -2,7 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Set environment variables
-ENV GITHUB_TOKEN=your_github_token
+# GITHUB_TOKEN is real generated from donstany account and expires 10.10.2024
+ENV GITHUB_TOKEN=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
 ENV FRESHDESK_TOKEN=your_freshdesk_api_key
 
 # Set the working directory

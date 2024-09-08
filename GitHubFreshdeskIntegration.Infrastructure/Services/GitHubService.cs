@@ -1,6 +1,7 @@
 ﻿using GitHubFreshdeskIntegration.Application.Features.Interfaces;
 using GitHubFreshdeskIntegration.Domain.Entities;
 using Refit;
+using System.Collections.Concurrent;
 
 namespace GitHubFreshdeskIntegration.Infrastructure.Services
 {
@@ -8,7 +9,7 @@ namespace GitHubFreshdeskIntegration.Infrastructure.Services
     public interface IGitHubApi
     {
         [Get("/users/{username}")]
-        Task<GitHubUser> GetUserAsync(string username);
+        Task<GitHubUser> GetUserAsync(string username, CancellationToken cancellationToken);
     }
 
     public class GitHubService : IGitHubService
@@ -20,9 +21,9 @@ namespace GitHubFreshdeskIntegration.Infrastructure.Services
             _gitHubApi = gitHubApi;
         }
 
-        public async Task<GitHubUser> GetUserAsync(string username)
+        public async Task<GitHubUser> GetUserAsync(string username, CancellationToken cancellationToken)
         {
-            return await _gitHubApi.GetUserAsync(username);
+            return await _gitHubApi.GetUserAsync(username, cancellationToken);
         }
     }
 }

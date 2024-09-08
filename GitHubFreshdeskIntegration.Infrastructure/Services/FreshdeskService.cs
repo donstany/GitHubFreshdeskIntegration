@@ -7,13 +7,13 @@ namespace GitHubFreshdeskIntegration.Infrastructure.Services
     public interface IFreshdeskApi
     {
         [Get("/contacts?email={email}")]
-        Task<ApiResponse<List<FreshdeskContact>>> GetContactByEmailAsync(string email);
+        Task<ApiResponse<List<FreshdeskContact>>> GetContactByEmailAsync(string email, CancellationToken cancellationToken);
 
         [Post("/contacts")]
-        Task<FreshdeskContact> CreateContactAsync([Body] FreshdeskContact contact);
+        Task<FreshdeskContact> CreateContactAsync([Body] FreshdeskContact contact, CancellationToken cancellationToken);
 
         [Put("/contacts/{id}")]
-        Task UpdateContactAsync(long id, [Body] FreshdeskContact contact);
+        Task UpdateContactAsync(long id, [Body] FreshdeskContact contact, CancellationToken cancellationToken);
     }
 
     public class FreshdeskService : IFreshdeskService
@@ -25,20 +25,20 @@ namespace GitHubFreshdeskIntegration.Infrastructure.Services
             _freshdeskApi = freshdeskApi;
         }
 
-        public async Task<FreshdeskContact> GetContactByEmailAsync(string email)
+        public async Task<FreshdeskContact> GetContactByEmailAsync(string email, CancellationToken cancellationToken)
         {
-            var response = await _freshdeskApi.GetContactByEmailAsync(email);
+            var response = await _freshdeskApi.GetContactByEmailAsync(email, cancellationToken);
             return response.Content?.Count > 0 ? response.Content[0] : null;
         }
 
-        public async Task<FreshdeskContact> CreateContactAsync(FreshdeskContact contact)
+        public async Task<FreshdeskContact> CreateContactAsync(FreshdeskContact contact, CancellationToken cancellationToken)
         {
-            return await _freshdeskApi.CreateContactAsync(contact);
+            return await _freshdeskApi.CreateContactAsync(contact, cancellationToken);
         }
 
-        public async Task UpdateContactAsync(long id, FreshdeskContact contact)
+        public async Task UpdateContactAsync(long id, FreshdeskContact contact, CancellationToken cancellationToken)
         {
-            await _freshdeskApi.UpdateContactAsync(id, contact);
+            await _freshdeskApi.UpdateContactAsync(id, contact, cancellationToken);
         }
     }
 }
