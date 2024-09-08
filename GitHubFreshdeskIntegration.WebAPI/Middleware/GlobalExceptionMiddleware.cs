@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Refit;
+using System.Net;
 using System.Text.Json;
 
 namespace GitHubFreshdeskIntegration.WebAPI.Middleware
@@ -35,7 +36,7 @@ namespace GitHubFreshdeskIntegration.WebAPI.Middleware
             var statusCode = (int)HttpStatusCode.InternalServerError;
             var message = "An unexpected error occurred. Please try again later.";
 
-            // You can add special handling for specific exception types
+
             if (exception is UnauthorizedAccessException)
             {
                 statusCode = (int)HttpStatusCode.Unauthorized;
@@ -46,8 +47,12 @@ namespace GitHubFreshdeskIntegration.WebAPI.Middleware
                 statusCode = (int)HttpStatusCode.BadRequest;
                 message = "Invalid request data.";
             }
+            else if (exception is ApiException)
+            {
+                message = $"API Error from 3-rd party app: {exception.Message}";
+            }
 
-            // Create the error response
+
             var errorResponse = new ErrorResponse
             {
                 StatusCode = statusCode,
