@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using FluentValidation.AspNetCore;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Validators;
@@ -14,7 +15,7 @@ using GitHubFreshdeskIntegration.Application.Features.Authentication.Commands;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure JWT Authentication
-var jwtKey = builder.Configuration["Jwt:SecretKey"]; // Ensure this is set in your appsetting.json
+var jwtKey = builder.Configuration["Jwt:SecretKey"]; // Ensure this is set in your appsettings.json
 var key = Encoding.ASCII.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
@@ -39,17 +40,14 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginCommandHandler>());
 
-
 // Register FluentValidation services
 builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation(); // Automatically validate model state
 builder.Services.AddFluentValidationClientsideAdapters(); // Add client-side validation adapters if needed
 
 // Load tokens from environment variables
-var githubToken = "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"; // working credentials
-var freshdeskToken = "xxx"; // mock credentials
-//var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
-//var freshdeskToken = Environment.GetEnvironmentVariable("FRESHDESK_TOKEN");
+var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+var freshdeskToken = Environment.GetEnvironmentVariable("FRESHDESK_TOKEN");
 
 if (string.IsNullOrEmpty(githubToken))
 {
@@ -79,7 +77,7 @@ builder.Services.AddRefitClient<IFreshdeskApi>()
     {
         var freshdeskSubdomain = builder.Configuration["Freshdesk:Subdomain"];
         c.BaseAddress = new Uri($"https://{freshdeskSubdomain}.freshdesk.com/api/v2");
-        var encodedToken = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{freshdeskToken}:X"));
+        var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{freshdeskToken}:X"));
         c.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedToken}");
     });
 
@@ -87,7 +85,37 @@ builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IFreshdeskService, FreshdeskService>();
 
 builder.Services.AddLogging();
-builder.Services.AddSwaggerGen();
+
+// Configure Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GitHubFreshdeskIntegration API", Version = "v1" });
+
+    // Configure Swagger to use JWT Bearer Authentication
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        In = ParameterLocation.Header,
+        Description = "Please enter token in the format: Bearer {your_token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -101,7 +129,11 @@ else
 }
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GitHubFreshdeskIntegration API V1");
+    c.RoutePrefix = string.Empty; // Set Swagger UI at app root
+});
 
 app.UseHttpsRedirection();
 
