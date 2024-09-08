@@ -9,7 +9,7 @@ using GitHubFreshdeskIntegration.WebAPI.Middleware;
 using Refit;
 using System.Reflection;
 using FluentValidation;
-using GitHubFreshdeskIntegration.Application.Features.Interfaces;
+using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.Authentication.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -117,6 +117,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -138,8 +150,11 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 
 // Add authentication middleware
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
+
+// Apply CORS policy
+app.UseCors("AllowAll");
 
 app.MapControllers();
 

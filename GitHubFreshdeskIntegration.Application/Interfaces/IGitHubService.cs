@@ -1,6 +1,6 @@
 ﻿using GitHubFreshdeskIntegration.Domain.Entities;
 
-namespace GitHubFreshdeskIntegration.Application.Features.Interfaces
+namespace GitHubFreshdeskIntegration.Application.Interfaces
 {
     public interface IGitHubService
     {

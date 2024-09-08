@@ -1,5 +1,5 @@
 ﻿using Moq;
-using GitHubFreshdeskIntegration.Application.Features.Interfaces;
+using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Domain.Entities;
 using MediatR;

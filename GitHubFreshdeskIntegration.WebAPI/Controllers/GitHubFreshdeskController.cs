@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GitHubFreshdeskIntegration.WebAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GitHubFreshdeskController : ControllerBase

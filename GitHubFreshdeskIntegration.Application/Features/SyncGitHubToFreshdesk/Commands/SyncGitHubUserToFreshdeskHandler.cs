@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using GitHubFreshdeskIntegration.Domain.Entities;
-using GitHubFreshdeskIntegration.Application.Features.Interfaces;
+using GitHubFreshdeskIntegration.Application.Interfaces;
+
 
 namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands
 {
