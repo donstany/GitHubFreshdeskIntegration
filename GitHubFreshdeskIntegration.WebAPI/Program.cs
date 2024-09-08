@@ -8,6 +8,7 @@ using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.Authentication.Commands;
 using GitHubFreshdeskIntegration.WebAPI.Extensions;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
+using GitHubFreshdeskIntegration.Application.Features.Authentication.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Sy
 
 // Register FluentValidation services
 builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 

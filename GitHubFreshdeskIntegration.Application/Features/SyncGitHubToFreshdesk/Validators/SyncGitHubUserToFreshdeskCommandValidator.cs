@@ -9,7 +9,7 @@ namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.
         {
             RuleFor(x => x.Username)
                 .NotEmpty().WithMessage("Username cannot be empty.")
-                .Length(1, 100).WithMessage("Username length must be between 1 and 50 characters.");
+                .Length(1, 50).WithMessage("Username length must be between 1 and 50 characters.");
 
             RuleFor(x => x.FreshdeskSubdomain)
                 .NotEmpty().WithMessage("Freshdesk subdomain cannot be empty.")

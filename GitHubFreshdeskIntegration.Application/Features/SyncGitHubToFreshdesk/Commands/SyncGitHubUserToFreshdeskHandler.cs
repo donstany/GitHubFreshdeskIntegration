@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using GitHubFreshdeskIntegration.Domain.Entities;
 using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Application.Extensions;
 
@@ -19,22 +18,18 @@ namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.
 
         public async Task<Unit> Handle(SyncGitHubUserToFreshdeskCommand request, CancellationToken cancellationToken)
         {
-            // Get GitHub User
             var gitHubUser = await _gitHubService.GetUserAsync(request.Username, cancellationToken);
 
-            // Use the extension method to map fields to Freshdesk contact
             var freshdeskContact = gitHubUser.ToFreshdeskContact();
 
-            // Check if contact already exists in Freshdesk
-            var existingContact = await _freshdeskService.GetContactByEmailAsync(gitHubUser.Email, cancellationToken);
-            if (existingContact != null)
+            var existingContactInFreshdesk = await _freshdeskService.GetContactByEmailAsync(gitHubUser.Email, cancellationToken);
+
+            if (existingContactInFreshdesk != null)
             {
-                // Update contact
-                await _freshdeskService.UpdateContactAsync(existingContact.Id, freshdeskContact, cancellationToken);
+                await _freshdeskService.UpdateContactAsync(existingContactInFreshdesk.Id, freshdeskContact, cancellationToken);
             }
             else
             {
-                // Create new contact
                 await _freshdeskService.CreateContactAsync(freshdeskContact, cancellationToken);
             }
 

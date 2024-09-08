@@ -6,6 +6,7 @@ namespace GitHubFreshdeskIntegration.Application.Features.Authentication.Command
     public class LoginCommand : IRequest<TokenResponse>
     {
         public LoginModel Model { get; set; }
+        public LoginCommand() { }
 
         public LoginCommand(LoginModel model)
         {

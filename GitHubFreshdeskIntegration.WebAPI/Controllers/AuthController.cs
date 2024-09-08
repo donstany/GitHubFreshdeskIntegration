@@ -17,18 +17,10 @@ namespace GitHubFreshdeskIntegration.WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
         {
-            var command = new LoginCommand(model);
-            try
-            {
-                var result = await _mediator.Send(command, cancellationToken);
-                return Ok(result);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new { message = ex?.Message });
-            }
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
         }
     }
 }
