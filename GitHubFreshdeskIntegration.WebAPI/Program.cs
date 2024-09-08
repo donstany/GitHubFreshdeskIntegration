@@ -1,22 +1,23 @@
 using GitHubFreshdeskIntegration.Application.Features.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
+using GitHubFreshdeskIntegration.WebAPI.Middleware;
 using Refit;
 using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 // Register MediatR services
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<SyncGitHubUserToFreshdeskHandler>());
 
 // Load tokens from environment variables
+var githubToken = "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"; // working credentials
+var freshdeskToken = "xxx"; // mock credentials
 //var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
 //var freshdeskToken = Environment.GetEnvironmentVariable("FRESHDESK_TOKEN");
-
-var githubToken = "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"; // working credentials
-var freshdeskToken = "test_fresh";
 
 if (string.IsNullOrEmpty(githubToken))
 {
@@ -54,9 +55,13 @@ builder.Services.AddRefitClient<IFreshdeskApi>()
 builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IFreshdeskService, FreshdeskService>();
 
+builder.Services.AddLogging(); // Add logging services
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
