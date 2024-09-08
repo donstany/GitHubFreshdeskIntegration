@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Refit;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
+using GitHubFreshdeskIntegration.Infrastructure.Interfaces;
 
 namespace GitHubFreshdeskIntegration.WebAPI.Extensions
 {

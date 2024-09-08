@@ -1,15 +1,9 @@
 ﻿using GitHubFreshdeskIntegration.Application.Interfaces;
 using GitHubFreshdeskIntegration.Domain.Entities;
-using Refit;
+using GitHubFreshdeskIntegration.Infrastructure.Interfaces;
 
 namespace GitHubFreshdeskIntegration.Infrastructure.Services
 {
-    //TODO excreact interface in separate file
-    public interface IGitHubApi
-    {
-        [Get("/users/{username}")]
-        Task<GitHubUser> GetUserAsync(string username, CancellationToken cancellationToken);
-    }
 
     public class GitHubService : IGitHubService
     {
