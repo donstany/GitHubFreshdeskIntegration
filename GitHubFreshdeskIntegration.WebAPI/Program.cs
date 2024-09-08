@@ -29,6 +29,10 @@ builder.Services.AddFluentValidationClientsideAdapters();
 
 // Add services to the container
 builder.Services.AddControllers();
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+});
 builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IFreshdeskService, FreshdeskService>();
 builder.Services.AddLogging();
