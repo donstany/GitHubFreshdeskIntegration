@@ -1,0 +1,6 @@
+@GitHubFreshdeskIntegration_HostAddress = http://localhost:5172
+
+GET {{GitHubFreshdeskIntegration_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
