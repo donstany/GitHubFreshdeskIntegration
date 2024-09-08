@@ -83,6 +83,8 @@ namespace GitHubFreshdeskIntegration.WebAPI.Extensions
 
         public static void AddRefitClients(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<GitHubFreshdeskIntegrationSettings>(configuration.GetSection("GitHubFreshdeskIntegration"));
+
             var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
             var freshdeskToken = Environment.GetEnvironmentVariable("FRESHDESK_TOKEN");
 
@@ -96,11 +98,13 @@ namespace GitHubFreshdeskIntegration.WebAPI.Extensions
                 throw new InvalidOperationException("Freshdesk token is not set.");
             }
 
+            var settings = configuration.GetSection("GitHubFreshdeskIntegration").Get<GitHubFreshdeskIntegrationSettings>();
+
             // Configure GitHub Refit client with Bearer token
             services.AddRefitClient<IGitHubApi>()
                 .ConfigureHttpClient(c =>
                 {
-                    c.BaseAddress = new Uri("https://api.github.com");
+                    c.BaseAddress = new Uri(settings.GitHubApiBaseUrl);
                     c.DefaultRequestHeaders.Add("User-Agent", "GitHubFreshdeskIntegration");
                     c.DefaultRequestHeaders.Add("Authorization", $"Bearer {githubToken}");
                 });
@@ -109,8 +113,7 @@ namespace GitHubFreshdeskIntegration.WebAPI.Extensions
             services.AddRefitClient<IFreshdeskApi>()
                 .ConfigureHttpClient(c =>
                 {
-                    var freshdeskSubdomain = configuration["Freshdesk:Subdomain"];
-                    c.BaseAddress = new Uri($"https://{freshdeskSubdomain}.freshdesk.com/api/v2");
+                    c.BaseAddress = new Uri(settings.FreshdeskApiBaseUrl);
                     var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{freshdeskToken}:X"));
                     c.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedToken}");
                 });
