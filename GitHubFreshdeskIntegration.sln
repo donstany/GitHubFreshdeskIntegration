@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SandBox", "SandBox", "{FAB7DD61-A2D8-4045-8EB7-8A39154FF97C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SandBoxes", "SandBoxes", "{FAB7DD61-A2D8-4045-8EB7-8A39154FF97C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreshdeskApiSandbox", "FreshdeskApiSandbox\FreshdeskApiSandbox.csproj", "{55673D71-A41E-4909-8294-8150A6D1C524}"
 EndProject

@@ -15,9 +15,10 @@ namespace GitHubApiSanbox
     public class GitHubUser
     {
         public string Login { get; set; }
-        public string Id { get; set; }
-        public string AvatarUrl { get; set; }
-        public string Url { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string TwitterUsername { get; set; }
     }
     class Program
     {
@@ -42,16 +43,18 @@ namespace GitHubApiSanbox
             var gitHubApi = host.Services.GetRequiredService<IGitHubApi>();
 
             // Replace 'octocat' with the GitHub username you want to query
-            string username = "octocat";
+            string username = "donstany";
 
             try
             {
                 Console.WriteLine("Fetching GitHub user information");
                 var user = await gitHubApi.GetUserAsync(username);
-                //Console.WriteLine($"User: {user.Login}");
-                //Console.WriteLine($"ID: {user.Id}");
-                //Console.WriteLine($"Avatar URL: {user.AvatarUrl}");
-                //Console.WriteLine($"Profile URL: {user.Url}");
+                Console.WriteLine($"User: {user.Email}");
+                Console.WriteLine($"Login: {user.Login}");
+                Console.WriteLine($"Name: {user.Name}");
+                Console.WriteLine($"Phone: {user.Phone}");
+                Console.WriteLine($"TwitterUsername URL: {user.TwitterUsername}");
+                ;
             }
             catch (ApiException ex)
             {
