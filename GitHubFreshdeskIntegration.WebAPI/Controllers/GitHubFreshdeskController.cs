@@ -18,9 +18,8 @@ namespace GitHubFreshdeskIntegration.WebAPI.Controllers
         }
 
         [HttpPost("sync")]
-        public async Task<IActionResult> SyncGitHubUserToFreshdesk([FromQuery] string username, [FromQuery] string freshdeskSubdomain, CancellationToken cancellationToken)
+        public async Task<IActionResult> SyncGitHubUserToFreshdesk([FromQuery] SyncGitHubUserToFreshdeskCommand command, CancellationToken cancellationToken)
         {
-            var command = new SyncGitHubUserToFreshdeskCommand(username, freshdeskSubdomain);
             await _mediator.Send(command, cancellationToken);
             return Ok("User synchronized successfully.");
         }

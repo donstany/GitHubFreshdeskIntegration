@@ -7,6 +7,8 @@ namespace GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.
         public string Username { get; set; }
         public string FreshdeskSubdomain { get; set; }
 
+        public SyncGitHubUserToFreshdeskCommand() { }
+
         public SyncGitHubUserToFreshdeskCommand(string username, string freshdeskSubdomain)
         {
             Username = username;
