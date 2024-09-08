@@ -9,11 +9,12 @@ using Refit;
 using System.Reflection;
 using FluentValidation;
 using GitHubFreshdeskIntegration.Application.Features.Interfaces;
+using GitHubFreshdeskIntegration.Application.Features.Authentication.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure JWT Authentication
-var jwtKey = "your_secret_key_here"; // Replace with your actual secret key
+var jwtKey = builder.Configuration["Jwt:SecretKey"]; // Ensure this is set in your appsetting.json
 var key = Encoding.ASCII.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
@@ -36,6 +37,8 @@ builder.Services.AddAuthentication(options =>
 
 // Register MediatR services
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginCommandHandler>());
+
 
 // Register FluentValidation services
 builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
