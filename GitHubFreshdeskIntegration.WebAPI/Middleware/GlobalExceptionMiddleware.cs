@@ -32,7 +32,6 @@ namespace GitHubFreshdeskIntegration.WebAPI.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            // Default to Internal Server Error (500)
             var statusCode = (int)HttpStatusCode.InternalServerError;
             var message = "An unexpected error occurred. Please try again later.";
 
@@ -57,7 +56,6 @@ namespace GitHubFreshdeskIntegration.WebAPI.Middleware
             {
                 StatusCode = statusCode,
                 Message = message,
-                // Include detailed message and exception type in development environments only
                 Detailed = _env.IsDevelopment() ? exception.Message : null,
                 ExceptionType = _env.IsDevelopment() ? exception.GetType().Name : null
             };

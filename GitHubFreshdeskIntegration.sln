@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SandBox", "SandBox", "{FAB7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreshdeskApiSandbox", "FreshdeskApiSandbox\FreshdeskApiSandbox.csproj", "{55673D71-A41E-4909-8294-8150A6D1C524}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubApiSanbox", "GitHubApiSanbox\GitHubApiSanbox.csproj", "{307113D5-9781-4D5A-885B-94A40D634EF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,12 +55,17 @@ Global
 		{55673D71-A41E-4909-8294-8150A6D1C524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55673D71-A41E-4909-8294-8150A6D1C524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55673D71-A41E-4909-8294-8150A6D1C524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{307113D5-9781-4D5A-885B-94A40D634EF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{307113D5-9781-4D5A-885B-94A40D634EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{307113D5-9781-4D5A-885B-94A40D634EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{307113D5-9781-4D5A-885B-94A40D634EF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{55673D71-A41E-4909-8294-8150A6D1C524} = {FAB7DD61-A2D8-4045-8EB7-8A39154FF97C}
+		{307113D5-9781-4D5A-885B-94A40D634EF5} = {FAB7DD61-A2D8-4045-8EB7-8A39154FF97C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6355E988-374D-4DAC-A68F-83C3280867F5}
