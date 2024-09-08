@@ -11,11 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubFreshdeskIntegration.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubFreshdeskIntegration.WebAPI", "GitHubFreshdeskIntegration.WebAPI\GitHubFreshdeskIntegration.WebAPI.csproj", "{3D4E9D61-D3BD-44A8-B38F-C880B778936B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubFreshdeskIntegration.Tests", "GitHubFreshdeskIntegration.Tests\GitHubFreshdeskIntegration.Tests.csproj", "{93499294-753C-4608-AA4A-D9EAED5CF3EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubFreshdeskIntegration.Tests", "GitHubFreshdeskIntegration.Tests\GitHubFreshdeskIntegration.Tests.csproj", "{93499294-753C-4608-AA4A-D9EAED5CF3EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D56A71F0-881D-471D-BD5A-BE6910EE7277}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global

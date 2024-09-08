@@ -1,5 +1,5 @@
-using FluentValidation.AspNetCore;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using GitHubFreshdeskIntegration.Application.Features.Interfaces;
 using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
@@ -18,7 +18,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Sy
 
 // Register FluentValidation services
 builder.Services.AddValidatorsFromAssemblyContaining<SyncGitHubUserToFreshdeskCommandValidator>();
-builder.Services.AddFluentValidationAutoValidation(); // Automatically validate model state
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 // Load tokens from environment variables
 var githubToken = "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"; // working credentials
