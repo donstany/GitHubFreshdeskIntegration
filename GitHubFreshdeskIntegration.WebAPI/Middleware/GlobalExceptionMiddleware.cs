@@ -48,7 +48,9 @@ namespace GitHubFreshdeskIntegration.WebAPI.Middleware
             }
             else if (exception is ApiException)
             {
-                message = $"API Error from 3-rd party app: {exception.Message}";
+                var ex = exception as ApiException;
+                statusCode = (int)ex.StatusCode;
+                message = $"API Error from 3-rd party app: {ex.Message}; {ex.Content}";
             }
 
 

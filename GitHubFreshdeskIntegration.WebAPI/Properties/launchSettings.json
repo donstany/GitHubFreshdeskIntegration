@@ -31,13 +31,24 @@
         "FRESHDESK_TOKEN": "xxx"
       }
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "GitHubFreshdeskIntegration.WebAPI": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7001",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GITHUB_TOKEN": "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", //real token from donstany github account
+        "FRESHDESK_TOKEN": "xxx"
+      },
+      "IIS Express": {
+        "commandName": "IISExpress",
+        "launchBrowser": true,
+        "launchUrl": "swagger",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
       }
     }
   }
-}

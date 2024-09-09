@@ -5,6 +5,8 @@ using System.Text;
 using Refit;
 using GitHubFreshdeskIntegration.Infrastructure.Services;
 using GitHubFreshdeskIntegration.Infrastructure.Interfaces;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace GitHubFreshdeskIntegration.WebAPI.Extensions
 {
@@ -100,23 +102,84 @@ namespace GitHubFreshdeskIntegration.WebAPI.Extensions
 
             var settings = configuration.GetSection("GitHubFreshdeskIntegration").Get<GitHubFreshdeskIntegrationSettings>();
 
-            // Configure GitHub Refit client with Bearer token
+            var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("PollyPolicies");
+
+            // Retry Policy with Jitter
+            var retryPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(3, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(new Random().Next(0, 100)),
+                    onRetry: (outcome, timespan, retryAttempt, context) =>
+                    {
+                        logger.LogWarning($"Retry {retryAttempt} after {timespan.TotalSeconds} seconds due to {outcome.Exception?.Message ?? outcome.Result.StatusCode.ToString()}");
+                    });
+
+            // Circuit Breaker Policy
+            var circuitBreakerPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30),
+                    onBreak: (outcome, breakDelay) =>
+                    {
+                        logger.LogWarning($"Circuit breaker opened for {breakDelay.TotalSeconds} seconds due to {outcome.Exception?.Message ?? outcome.Result.StatusCode.ToString()}");
+                    },
+                    onReset: () => logger.LogInformation("Circuit breaker reset."),
+                    onHalfOpen: () => logger.LogInformation("Circuit breaker half-open; testing the external service."));
+
+            // Timeout Policy
+            var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10, onTimeoutAsync: (context, timespan, task) =>
+            {
+                logger.LogWarning($"Execution timed out after {timespan.TotalSeconds} seconds.");
+                return Task.CompletedTask;
+            });
+
+            // Bulkhead Policy
+            var bulkheadPolicy = Policy.BulkheadAsync<HttpResponseMessage>(
+                maxParallelization: 10,
+                maxQueuingActions: 20,
+                onBulkheadRejectedAsync: context =>
+                {
+                    logger.LogWarning("Bulkhead rejection occurred.");
+                    return Task.CompletedTask;
+                });
+
+            // Fallback Policy
+            var fallbackPolicy = Policy<HttpResponseMessage>
+                .Handle<HttpRequestException>()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+                .FallbackAsync(
+                    fallbackValue: new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{ \"message\": \"Service is currently unavailable. Please try again later.\" }")
+                    },
+                    onFallbackAsync: (result, context) =>
+                    {
+                        logger.LogWarning($"Fallback triggered due to {result.Exception?.Message ?? result.Result.StatusCode.ToString()}");
+                        return Task.CompletedTask;
+                    });
+
+            // Combine policies into one policy wrap
+            var resiliencePolicy = Policy.WrapAsync(fallbackPolicy, bulkheadPolicy, circuitBreakerPolicy, retryPolicy, timeoutPolicy);
+
+            // Configure GitHub Refit client with Bearer token and resilience policies
             services.AddRefitClient<IGitHubApi>()
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = new Uri(settings.GitHubApiBaseUrl);
                     c.DefaultRequestHeaders.Add("User-Agent", "GitHubFreshdeskIntegration");
                     c.DefaultRequestHeaders.Add("Authorization", $"Bearer {githubToken}");
-                });
+                })
+                .AddPolicyHandler(resiliencePolicy);
 
-            // Configure Freshdesk Refit client with Basic Auth
+            // Configure Freshdesk Refit client with Basic Auth and resilience policies
             services.AddRefitClient<IFreshdeskApi>()
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = new Uri(settings.FreshdeskApiBaseUrl);
                     var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{freshdeskToken}:X"));
                     c.DefaultRequestHeaders.Add("Authorization", $"Basic {encodedToken}");
-                });
+                })
+                .AddPolicyHandler(resiliencePolicy);
         }
     }
 }

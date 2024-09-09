@@ -39,7 +39,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Expose the port the app runs on
-EXPOSE 80
+EXPOSE 7000
 
 # Define the entry point for the application
 ENTRYPOINT ["dotnet", "GitHubFreshdeskIntegration.WebAPI.dll"]
