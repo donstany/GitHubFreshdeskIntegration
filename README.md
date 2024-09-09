@@ -29,5 +29,5 @@ GitHubFreshdeskIntegration is a .NET 8 WebAPI application designed to integrate 
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/GitHubFreshdeskIntegration.git
+   git clone https://github.com/donstany/GitHubFreshdeskIntegration.git
    cd GitHubFreshdeskIntegration

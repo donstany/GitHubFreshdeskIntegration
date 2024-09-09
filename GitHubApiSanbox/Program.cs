@@ -5,7 +5,6 @@ using Refit;
 namespace GitHubApiSanbox
 {
 
-
     public interface IGitHubApi
     {
         [Get("/users/{username}")]
@@ -34,7 +33,7 @@ namespace GitHubApiSanbox
                             {
                                 client.BaseAddress = new Uri("https://api.github.com");
                                 client.DefaultRequestHeaders.Add("User-Agent", "ConsoleApp");
-                                client.DefaultRequestHeaders.Add("Authorization", ("Bearer " + githubToken)); // Personal Access Token from donstany profile
+                                client.DefaultRequestHeaders.Add("Authorization", ("Bearer " + githubToken)); // Personal Access Token from donstany profile valid till end of October 2024
                             });
                 })
                 .Build();
