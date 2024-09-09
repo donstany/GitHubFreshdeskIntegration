@@ -1,20 +1,23 @@
-﻿using Moq;
+﻿using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Application.Interfaces;
-using GitHubFreshdeskIntegration.Application.Features.SyncGitHubToFreshdesk.Commands;
 using GitHubFreshdeskIntegration.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 public class SyncGitHubUserToFreshdeskHandlerTests
 {
     private readonly Mock<IGitHubService> _gitHubServiceMock;
     private readonly Mock<IFreshdeskService> _freshdeskServiceMock;
+    private readonly Mock<ILogger<SyncGitHubUserToFreshdeskHandler>> _loggerMock;
     private readonly SyncGitHubUserToFreshdeskHandler _handler;
 
     public SyncGitHubUserToFreshdeskHandlerTests()
     {
         _gitHubServiceMock = new Mock<IGitHubService>();
         _freshdeskServiceMock = new Mock<IFreshdeskService>();
-        _handler = new SyncGitHubUserToFreshdeskHandler(_gitHubServiceMock.Object, _freshdeskServiceMock.Object);
+        _loggerMock = new Mock<ILogger<SyncGitHubUserToFreshdeskHandler>>();
+        _handler = new SyncGitHubUserToFreshdeskHandler(_gitHubServiceMock.Object, _freshdeskServiceMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -93,5 +96,52 @@ public class SyncGitHubUserToFreshdeskHandlerTests
         _freshdeskServiceMock.Verify(service => service.UpdateContactAsync(existingContact.Id, It.Is<FreshdeskContact>(c => c.Email == gitHubUser.Email), cancellationToken), Times.Once);
         _freshdeskServiceMock.Verify(service => service.CreateContactAsync(It.IsAny<FreshdeskContact>(), It.IsAny<CancellationToken>()), Times.Never);
         Assert.Equal(Unit.Value, result);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenGitHubUserNotFound()
+    {
+        // Arrange
+        var command = new SyncGitHubUserToFreshdeskCommand("nonexistentUser", "freshdeskSubdomain");
+        var cancellationToken = new CancellationToken();
+
+        _gitHubServiceMock
+            .Setup(service => service.GetUserAsync(command.Username, cancellationToken))
+            .ReturnsAsync((GitHubUser?)null); // GitHub user not found
+
+        // Act
+        var result = await _handler.Handle(command, cancellationToken);
+
+        _freshdeskServiceMock.Verify(service => service.CreateContactAsync(It.IsAny<FreshdeskContact>(), It.IsAny<CancellationToken>()), Times.Never);
+        _freshdeskServiceMock.Verify(service => service.UpdateContactAsync(It.IsAny<long>(), It.IsAny<FreshdeskContact>(), It.IsAny<CancellationToken>()), Times.Never);
+
+        _loggerMock.Verify(
+                   logger => logger.Log(
+                       LogLevel.Warning,
+                       It.IsAny<EventId>(), 
+                       It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("GitHub user 'nonexistentUser' not found")), 
+                       It.IsAny<Exception>(), // Exception
+                       It.IsAny<Func<It.IsAnyType, Exception, string>>()
+                   ), Times.Once);
+
+        Assert.Equal(Unit.Value, result);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallGitHubServiceWithCorrectUsername()
+    {
+        // Arrange
+        var command = new SyncGitHubUserToFreshdeskCommand("correctUsername", "freshdeskSubdomain");
+        var cancellationToken = new CancellationToken();
+
+        _gitHubServiceMock
+            .Setup(service => service.GetUserAsync(It.IsAny<string>(), cancellationToken))
+            .ReturnsAsync(new GitHubUser());
+
+        // Act
+        await _handler.Handle(command, cancellationToken);
+
+        // Assert
+        _gitHubServiceMock.Verify(service => service.GetUserAsync("correctUsername", cancellationToken), Times.Once);
     }
 }
